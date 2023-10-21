@@ -1,0 +1,12 @@
+load:0x3c130020,len:0x97380
+load:0x3fc8e400,len:0x2ee8
+load:0x40380000,len:0x5d80
+load:0x42000020,len:0x126da0
+Invalid image block, can't boot.
+ets_main.c 333
+ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0x7 (TG0WDT_SYS_RST),boot:0xc (SPI_FAST_FLASH_BOOT)
+Saved PC:0x40047ed2
+SPIWP:0xee
+mode:DIO, clock div:1
