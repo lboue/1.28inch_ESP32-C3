@@ -1,0 +1,164 @@
+substitutions:
+  devicename: wallwatch01
+  friendname: WallWatch01
+  location: master
+  board: esp32-c3-devkitm-1
+  repin: GPIO1
+  dcpin: GPIO2
+  bkpin: GPIO3
+  clpin: GPIO6
+  mopin: GPIO7
+  cspin: GPIO10
+
+esphome:
+  name: wallwatch01
+  friendly_name: wallwatch01
+  platformio_options:
+    board_build.f_flash: 80000000L  # Custom FLASH Frequency
+    board_build.flash_mode: qio     # Custom FLASH Mode
+    
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+external_components:
+  - source: github://the-smart-home-maker/esphome-4cello@gc9a01
+    components: ["gc9a01"]
+
+# Enable logging
+# Change to error to avoid "Components should block for at most 20-30ms" messages - an issue since 2023.7.0
+logger:
+  level: DEBUG
+  logs:
+    component: ERROR
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "Dq1o2NJnp29FmJ7KEyB4e5pv9qj7aOBFDEey6o2RaHU="
+
+ota:
+  password: "808ea462c4e9d51003859bbac317ac02"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Wallwatch01 Fallback Hotspot"
+    password: "hDoYDqEtCsjn"
+
+captive_portal:
+
+time:
+  - platform: homeassistant
+    timezone: "Europe/Paris"
+    id: esptime
+
+sensor:
+  - platform: uptime
+    name: "$devicename Uptime"
+  - platform: wifi_signal
+    name: "$devicename WiFi Signal"
+    update_interval: 60s    
+
+#external_components:
+#  - source: github://pr#3625
+#    components: [ gc9a01 ]
+#  - source: github://4cello/esphome@gc9a01
+#    components: ["gc9a01"]
+# Arduino code shows screen is a GC9A01 with CST816D touch screen
+# Neither above work - screen blank
+
+spi:
+  mosi_pin: GPIO7
+  clk_pin: GPIO6
+# Arduino IDE Code says
+#      cfg.pin_sclk = 6
+#      cfg.pin_mosi = 7
+# ESP32-2424S012-V1.0.PNG agrees
+# ESP32-2424S012-V1.0.PNG (LCM diagram) agrees - SCL and SDA
+
+# Need to turn on backlight as by default is not on
+output:
+  - platform: ledc
+    pin: $bkpin
+    id: gpio_3_backlight_pwm
+light:
+  - platform: monochromatic
+    output: gpio_3_backlight_pwm
+    name: "Display Backlight"
+    id: back_light
+    restore_mode: ALWAYS_ON
+
+# The following assumes you have the named fonts in config\fonts
+font:
+  #- file: 'fonts/GoogleSans-Medium.ttf'
+  - file: 'epaper/GothamRnd-Bold.ttf'
+    id: font_16
+    size: 16
+  - file: 'epaper/GothamRnd-Bold.ttf'
+    id: font_24
+    size: 24
+  - file: 'epaper/GothamRnd-Bold.ttf'
+    id: font_32
+    size: 32
+    
+
+color:
+  - id: my_red
+    red: 100%
+    green: 3%
+    blue: 5%
+  - id: my_green
+    red: 3%
+    green: 100%
+    blue: 5%
+  - id: my_blue
+    red: 3%
+    green: 5%
+    blue: 100%
+
+display:
+#  - platform: ili9xxx
+#    model: gc9a01
+# Above is for when or if this is merged into the ili9xxx platform
+  - platform: gc9a01
+    id: watchface
+    reset_pin: $repin
+    cs_pin: $cspin
+    dc_pin: $dcpin
+
+# Rotate the screen so usb socket is pointing down
+    rotation: 90
+
+# Print the date on one line in blue
+# Print the current time on the next line, but in a bigger font and in default white
+# Print the outside temp on the next line but in green
+# Surround the lot by a red circle with centre at 120, 120 and a radius of 115 because why not
+# Procrastinating now on the touchscreen, so instead added a second page and cycling between two screens because again why not
+    pages:
+      - id: page1
+        lambda: |-
+          //id(clear_day).next_frame();
+          //it.image(100, 30, id(clear_day), COLOR_ON, COLOR_OFF);
+          it.strftime(120,80, id(font_16), id(my_blue), TextAlign::CENTER, "%A %b %d", id(esptime).now());
+          it.strftime(120,120, id(font_32), TextAlign::CENTER, "%I:%M %p", id(esptime).now());
+          //it.printf(120, 170, id(font_32), id(my_green), TextAlign::CENTER, "Now: %.1f°", id(outdoor_temperature).state);
+          it.circle(120, 120, 115, id(my_red));
+      - id: page2
+        lambda: |-
+          //id(clear_day).next_frame();
+          //it.image(100, 30, id(clear_day), COLOR_ON, COLOR_OFF);
+          it.strftime(120,80, id(font_16), id(my_blue), TextAlign::CENTER, "%A %b %d", id(esptime).now());
+          it.printf(120,120, id(font_24), TextAlign::CENTER, "Today Min/Max:");
+          //it.printf(120, 170, id(font_32), id(my_green), TextAlign::CENTER, "%.1f/%.1f°", id(min_temperature).state,id(max_temperature).state);
+          it.circle(120, 120, 115, id(my_blue));
+
+interval:
+  - interval: 5s
+    then:
+      - display.page.show_next: watchface
+      - component.update: watchface
