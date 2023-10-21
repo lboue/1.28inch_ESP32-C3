@@ -24,3 +24,9 @@ https://www.displaysmodule.com/video/ecerplay.html
 
 ## Source code
 Source code archive 1.28inch_ESP32-2432S032.zip can be found [here](http://pan.jczn1688.com/1/ESP32%20module): 
+
+## Dump
+
+```
+python esptool.py -b 115200 --port COM21 read_flash 0x00000 0x400000 flash_4M.bin
+```
