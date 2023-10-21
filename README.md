@@ -2,6 +2,7 @@
 1.28inch_ESP32-C3
 
 ## Hardware
+Brand: [Shenzhen Jingcai Intelligent Co., Ltd](https://www.displaysmodule.com)
 
 ESP32 LVGL for Arduino Development Board 1.28 Inch 240*240 IPS Smart Display Screen LCD TFT Module WiFi & Bluetooth with Touch
  * [Aliexpress](https://www.aliexpress.com/item/1005005561489118.html)
