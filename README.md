@@ -11,7 +11,9 @@ ESP32 LVGL for Arduino Development Board 1.28 Inch 240*240 IPS Smart Display Scr
 * capacitive touch.
 * includes LCD display screen, backlight control circuit,IO port interface, this module supports development in arduino IDE, ESP IDE, Micropython and Mixly
 
-.
+![image](https://github.com/lboue/1.28inch_ESP32-C3/assets/938089/67d7e8a0-ca0c-4d22-9aca-f573492b956b)
+
+
 * Brand: [Shenzhen Jingcai Intelligent Co., Ltd](https://www.displaysmodule.com)
 * Specs: [1.28 Inch ESP32 Black shell CTP Display Module 240x240 Tft Lcd Screen Module LVGL Development Board](https://www.displaysmodule.com/sale-37538321-1-28-inch-esp32-black-shell-ctp-display-module-240x240-tft-lcd-screen-module-lvgl-development-board.html)
  * Store
