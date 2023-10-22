@@ -30,3 +30,11 @@ Source code archive 1.28inch_ESP32-2432S032.zip can be found [here](http://pan.j
 ```
 python esptool.py -b 115200 --port COM21 read_flash 0x00000 0x400000 flash_4M.bin
 ```
+
+
+
+## ESPHome
+
+```
+esphomeflasher your_esphome_firmware.bin --bootloader bootloader_qio_80m.bin
+```
