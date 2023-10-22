@@ -36,5 +36,6 @@ python esptool.py -b 115200 --port COM21 read_flash 0x00000 0x400000 flash_4M.bi
 ## ESPHome
 
 ```
+pip install esphomeflasher
 esphomeflasher your_esphome_firmware.bin --bootloader bootloader_qio_80m.bin
 ```
