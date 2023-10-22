@@ -39,3 +39,25 @@ python esptool.py -b 115200 --port COM21 read_flash 0x00000 0x400000 flash_4M.bi
 pip install esphomeflasher
 esphomeflasher your_esphome_firmware.bin --bootloader bootloader_qio_80m.bin
 ```
+
+
+ESP32 firmware is split into 4 different files. When these files are installed using the command-line tool esptool, it will patch flash frequency, flash size and flash mode to match the target device. ESP Web Tools is not able to do this on the fly, so you will need to use esptool to create the single binary file and use that with ESP Web Tools.
+
+Create a single binary using esptool with the following command:
+
+```
+esptool --chip esp32 merge_bin \
+  -o merged-firmware.bin \
+  --flash_mode dio \
+  --flash_freq 40m \
+  --flash_size 4MB \
+  0x1000 bootloader.bin \
+  0x8000 partitions.bin \
+  0xe000 boot.bin \
+  0x10000 your_app.bin
+```
+If your memory type is opi_opi or opi_qspi, set your flash mode to be dout. Else, if your flash mode is qio or qout, override your flash mode to be dio.
+
+
+
+https://github.com/espressif/arduino-esp32/blob/b588aff6d6edfdc764c2d687a3f1b7242e96b176/tools/sdk/bin/bootloader_qio_80m.bin
